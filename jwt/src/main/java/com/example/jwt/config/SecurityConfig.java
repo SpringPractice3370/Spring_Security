@@ -1,5 +1,6 @@
 package com.example.jwt.config;
 
+import com.example.jwt.config.jwt.JwtAuthenticationFilter;
 import com.example.jwt.filter.MyFilter1;
 import com.example.jwt.filter.MyFilter3;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(corsFilter) // 모든 요청이 이 필터에 걸림  //  @CrossOrigin(인증이 없을때 문제), 인증이 있을때는 시큐리티 필터에 등록
                 .formLogin().disable() // 폼 로그인 사용 x
                 .httpBasic().disable()
+                .addFilter(new JwtAuthenticationFilter(authenticationManager())) // AuthenticationManager 를 파라미터로 줘야 됨
                 .authorizeRequests()
                 .antMatchers("/api/v1/user/**") // 여기로 주소가 들어오면
                 .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
@@ -35,5 +37,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/admin/**")
                 .access("hasRole('ROLE_ADMIN')")
                 .anyRequest().permitAll(); // 다른 요청은 권한 없이 가능
+
     }
 }
