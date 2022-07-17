@@ -56,9 +56,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
 
             // 강제로 Authentication 객체를 만들어줌
-            // 비밀번호가 null 로 해도 되는 이유는 이전에 인증을 완료했기에.(username 이 null 이 아니여서.)
             // JWT 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어 줌
-            Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    principalDetails,
+                    null, // 비밀번호가 null 로 해도 되는 이유는 이전에 인증을 완료했기에.(username 이 null 이 아니여서.)
+                    principalDetails.getAuthorities()
+            );
 
             // 강제로 Security 의 세션에 접근하여 Authentication 객체를 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
