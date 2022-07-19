@@ -9,20 +9,31 @@ package com.example.securityBasic.config.auth;
 // Security Session => (들어갈 수 있는 객체는) Authentication => (Authentication 안에 유저 정보를 저장할 떈) UserDetails(PrincipleDetails)
 
 import com.example.securityBasic.model.User;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
-public class PrincipleDetails implements UserDetails {
+@Data
+public class PrincipleDetails implements UserDetails, OAuth2User {
 
     private User user; // 콤포지션
+    private Map<String, Object> attributes;
 
+    // 일반 로그인
     public PrincipleDetails(User user) {
         this.user = user;
     }
 
+    // OAuth 로그인
+    public PrincipleDetails(User user, Map<String, Object> attributes) {
+        this.user = user;
+        this.attributes = attributes;
+    }
 
     // 해당 User의 권한을 리턴하는 곳
     @Override
@@ -71,4 +82,14 @@ public class PrincipleDetails implements UserDetails {
         return true;
     }
 
+    @Override
+    public String getName() {
+//        return attributes.get("sub");
+        return null; // 별로 안 중요.
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
 }
