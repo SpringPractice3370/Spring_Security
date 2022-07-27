@@ -15,12 +15,13 @@ public class KakaoUser extends OAuth2UserInfo {
     private Map<String, Object> kakaoAccountAttributes;
 
     // 카카오 프로필 정보
-    private Map<String, Object> kakaoProfileAttribute;
+    private Map<String, Object> kakaoProfileAttributes;
+
 
     public KakaoUser(Map<String, Object> attributes) {
         super(attributes);
-        this.kakaoAccountAttributes =  (Map<String, Object>) attributes.get("kakao_account");
-        this.kakaoProfileAttribute =(Map<String, Object>) kakaoProfileAttribute.get("profile");
+        kakaoAccountAttributes = (Map<String, Object>) attributes.get("kakao_account");
+        kakaoProfileAttributes = (Map<String, Object>) kakaoAccountAttributes.get("profile");
     }
 
     @Override
@@ -35,7 +36,7 @@ public class KakaoUser extends OAuth2UserInfo {
 
     @Override
     public String getNickname() {
-        return (String) kakaoProfileAttribute.get("nickname");
+        return (String) kakaoProfileAttributes.get("nickname");
     }
 
     @Override

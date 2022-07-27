@@ -1,4 +1,4 @@
-package com.example.jwtwithoauth2.auth.oauth2;
+package com.example.jwtwithoauth2.auth.oauth2.model;
 
 import com.example.jwtwithoauth2.account.Account;
 import com.example.jwtwithoauth2.auth.oauth2.model.OAuth2UserInfo;
@@ -30,7 +30,7 @@ public class CustomOAuth2User extends DefaultOAuth2User {
      */
     public CustomOAuth2User(OAuth2UserInfo oAuth2UserInfo, Account account) {
         super(List.of(new SimpleGrantedAuthority(account.getRole().name())), oAuth2UserInfo.getAttributes(), account.getProvider().getAttributeKey());
-
+        this.account = account;
     }
 
 }

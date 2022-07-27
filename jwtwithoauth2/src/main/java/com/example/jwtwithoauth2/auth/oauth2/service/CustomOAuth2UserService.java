@@ -3,7 +3,7 @@ package com.example.jwtwithoauth2.auth.oauth2.service;
 
 import com.example.jwtwithoauth2.account.Account;
 import com.example.jwtwithoauth2.account.AccountRepository;
-import com.example.jwtwithoauth2.auth.oauth2.CustomOAuth2User;
+import com.example.jwtwithoauth2.auth.oauth2.model.CustomOAuth2User;
 import com.example.jwtwithoauth2.auth.oauth2.model.OAuth2Provider;
 import com.example.jwtwithoauth2.auth.oauth2.model.OAuth2UserInfo;
 import com.example.jwtwithoauth2.auth.oauth2.model.OAuth2UserInfoFactory;

@@ -1,6 +1,6 @@
 package com.example.jwtwithoauth2.account;
 
-import com.example.jwtwithoauth2.auth.Role;
+import com.example.jwtwithoauth2.auth.oauth2.model.Role;
 import com.example.jwtwithoauth2.auth.oauth2.model.OAuth2Provider;
 import lombok.AccessLevel;
 import lombok.Builder;

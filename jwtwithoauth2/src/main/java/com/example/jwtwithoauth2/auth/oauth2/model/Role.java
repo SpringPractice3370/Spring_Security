@@ -1,4 +1,4 @@
-package com.example.jwtwithoauth2.auth;
+package com.example.jwtwithoauth2.auth.oauth2.model;
 
 /**
  * <h1>Role</h1>
