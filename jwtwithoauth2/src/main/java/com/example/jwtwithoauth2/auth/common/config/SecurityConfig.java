@@ -1,16 +1,21 @@
-package com.example.jwtwithoauth2.config;
+package com.example.jwtwithoauth2.auth.common.config;
 
 
+import com.example.jwtwithoauth2.auth.jwt.filter.JwtAuthenticationFilter;
+import com.example.jwtwithoauth2.auth.jwt.handler.JwtAuthenticationFailureHandler;
+import com.example.jwtwithoauth2.auth.jwt.provider.JwtAuthenticationProvider;
 import com.example.jwtwithoauth2.auth.oauth2.handler.OAuth2LoginAuthenticationSuccessHandler;
 import com.example.jwtwithoauth2.auth.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
+
+import javax.servlet.Filter;
 
 
 /**
@@ -34,6 +39,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private OAuth2LoginAuthenticationSuccessHandler oAuth2LoginAuthenticationSuccessHandler;
 
+    // jwt Beans
+    @Autowired
+    private JwtAuthenticationProvider jwtAuthenticationProvider;
+
+    @Autowired
+    private JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
+
+    public Filter jwtAuthenticationFilter() throws Exception {
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter("/api/**");
+        filter.setAuthenticationManager(super.authenticationManager());
+        filter.setAuthenticationFailureHandler(jwtAuthenticationFailureHandler);
+        return filter;
+    }
+
+    // authentication manager setting
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        super.configure(auth);
+        auth.authenticationProvider(jwtAuthenticationProvider);
+    }
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.httpBasic().disable()
@@ -46,5 +73,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(oAuth2LoginAuthenticationSuccessHandler)
                 .userInfoEndpoint()
                 .userService(customOAuth2UserService);
+
+        // JWT Authentication filter chain configuration
+        http.addFilterBefore(jwtAuthenticationFilter(), OAuth2AuthorizationRequestRedirectFilter.class);
+
+        // URL security
+        http.authorizeRequests()
+                .antMatchers("/api/a").access("hasRole('ROLE_ADMIN')");
     }
 }

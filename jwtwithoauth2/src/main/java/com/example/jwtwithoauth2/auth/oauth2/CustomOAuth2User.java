@@ -1,4 +1,4 @@
-package com.example.jwtwithoauth2.auth.oauth2.model;
+package com.example.jwtwithoauth2.auth.oauth2;
 
 import com.example.jwtwithoauth2.account.Account;
 import com.example.jwtwithoauth2.auth.oauth2.model.OAuth2UserInfo;

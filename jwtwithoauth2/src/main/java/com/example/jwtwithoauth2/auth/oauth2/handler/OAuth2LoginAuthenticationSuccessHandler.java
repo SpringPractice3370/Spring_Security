@@ -2,14 +2,12 @@ package com.example.jwtwithoauth2.auth.oauth2.handler;
 
 import com.example.jwtwithoauth2.account.Account;
 import com.example.jwtwithoauth2.auth.jwt.util.JwtTokenFactory;
-import com.example.jwtwithoauth2.auth.oauth2.model.CustomOAuth2User;
+import com.example.jwtwithoauth2.auth.oauth2.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
