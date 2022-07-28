@@ -2,6 +2,7 @@ package com.example.jwtwithoauth2.auth.jwt.filter;
 
 import com.example.jwtwithoauth2.auth.jwt.exception.AuthorizationHeaderNotFoundException;
 import com.example.jwtwithoauth2.auth.jwt.token.JwtPreAuthenticationToken;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -22,6 +23,7 @@ import java.util.Objects;
  * 인증이 필요한 요청이 들어올 경우 해당 필터가 JWT 토큰을 이용해 인증처리한다.
  * </p>
  */
+@Slf4j
 public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -41,6 +43,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+        log.info("jwt auth 필터 작동");
         String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
 
         // 인증 헤더가 없는 경우 예외 발생

@@ -57,20 +57,26 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.createUserInfo(provider, attributes);
 
-        Account account = null;
-        Optional<Account> findAccount = accountRepository.findByEmail(userInfo.getEmail());
+//        Account account = null;
+//        Optional<Account> findAccount = accountRepository.findByEmail(userInfo.getEmail());
+        Optional<Account> findAccount = accountRepository.findByEmailAndProvider(userInfo.getEmail(), userInfo.getOAuth2Provider());
 
         if (findAccount.isEmpty()) {
             // 신규 회원일 경우
-            Account newAccount = Account.createAccount(userInfo.getOAuth2Id(), userInfo.getEmail(), userInfo.getNickname(), userInfo.getOAuth2Provider());
+            Account newAccount = Account.
+                    createAccount(
+                            userInfo.getOAuth2Id(),
+                            userInfo.getEmail(),
+                            userInfo.getNickname(),
+                            userInfo.getOAuth2Provider()
+                    );
             accountRepository.save(newAccount);
-            account = newAccount;
-        } else {
-            // 기존 회원일 경우
-            account = findAccount.get();
+
+            Account account = newAccount;
+            return new CustomOAuth2User(userInfo, account);
         }
 
 
-        return new CustomOAuth2User(userInfo, account);
+        return new CustomOAuth2User(userInfo, findAccount.get());
     }
 }

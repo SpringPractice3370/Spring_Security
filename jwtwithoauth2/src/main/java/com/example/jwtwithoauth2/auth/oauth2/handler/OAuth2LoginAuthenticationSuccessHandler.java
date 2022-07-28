@@ -1,10 +1,13 @@
 package com.example.jwtwithoauth2.auth.oauth2.handler;
 
 import com.example.jwtwithoauth2.account.Account;
+import com.example.jwtwithoauth2.auth.jwt.dto.TokenOfLogin;
+import com.example.jwtwithoauth2.auth.jwt.service.RefreshTokenService;
 import com.example.jwtwithoauth2.auth.jwt.util.JwtTokenFactory;
 import com.example.jwtwithoauth2.auth.oauth2.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -22,6 +25,7 @@ import java.io.IOException;
 public class OAuth2LoginAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtTokenFactory jwtTokenFactory;
+    private final RefreshTokenService refreshTokenService;
 
     @Value("${app.oauth2.authorized-redirect-uri}")
     private String redirectUrl;
@@ -38,17 +42,27 @@ public class OAuth2LoginAuthenticationSuccessHandler implements AuthenticationSu
         boolean first = loggedInUser.isFirst();
         log.info("추가정보 기입 여부 first {}", first);
 
-        // 액세스 토큰
-        String accessToken = jwtTokenFactory.createAccessToken(loggedInUser);
-        log.info("액세스 토큰 accessToken {}", accessToken);
+//        // 액세스 토큰
+//        String accessToken = jwtTokenFactory.createAccessToken(loggedInUser);
 
-        String uri = UriComponentsBuilder
+        // 로그인 시, 발급되는 엑세스토큰, 리프레시토큰 dto 생성
+        TokenOfLogin tokenOfLogin = jwtTokenFactory.createToken(loggedInUser);
+
+        // Save Refresh Token Entity To Data Base
+        refreshTokenService.saveRefreshToken(loggedInUser, tokenOfLogin.getRefreshToken());
+
+        log.info("액세스 토큰, 리프레시 토큰 Dto tokenOfLogin = {}", tokenOfLogin);
+        log.info("액세스 토큰, 리프레시 토큰 Dto tokenOfLogin.getAccessToken = {}", tokenOfLogin.getAccessToken());
+        log.info("액세스 토큰, 리프레시 토큰 Dto tokenOfLogin.getRefreshToken = {}", tokenOfLogin.getRefreshToken());
+
+        String redirectUri = UriComponentsBuilder
                 .fromUriString(redirectUrl)
-                .queryParam("access-token", accessToken)
+                .queryParam("access-token", tokenOfLogin.getAccessToken())
+                .queryParam("refresh-token", tokenOfLogin.getRefreshToken())
                 .queryParam("is-first", first)
                 .toUriString();
 
-        response.sendRedirect(uri);
+        response.sendRedirect(redirectUri);
 
     }
 }
