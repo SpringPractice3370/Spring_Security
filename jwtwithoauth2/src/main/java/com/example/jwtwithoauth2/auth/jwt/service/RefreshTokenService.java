@@ -16,15 +16,28 @@ public class RefreshTokenService {
         // refresh token Entity
         RefreshToken refreshTokenEntity = new RefreshToken();
 
-        refreshTokenRepository.save(refreshTokenEntity.createRefreshToken(
-                loggedInUser.getEmail(),
-                loggedInUser.getId(),
-                refreshToken,
-                loggedInUser.getRole()
-        ));
-
+        refreshTokenRepository.save(createRefreshToken(loggedInUser, refreshToken));
     }
-    public void renewalRefreshToken(String refreshToken){
 
+    public void renewalRefreshToken(RefreshToken refreshToken){
+        refreshTokenRepository.save(refreshToken);
+    }
+
+    public RefreshToken createRefreshToken(Account loggedInUser, String refreshToken){
+
+        return RefreshToken.createRefreshToken
+                (
+                        loggedInUser.getEmail(),
+                        loggedInUser.getId(),
+                        refreshToken,
+                        loggedInUser.getRole()
+                );
+    }
+    public RefreshToken getRefreshToken(String refreshToken){
+        return refreshTokenRepository.findByRefreshToken(refreshToken);
+    }
+
+    public void removeRefreshToken(Long id){
+        refreshTokenRepository.deleteById(id);
     }
 }

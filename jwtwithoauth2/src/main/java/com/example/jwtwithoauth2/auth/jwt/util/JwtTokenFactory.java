@@ -4,9 +4,11 @@ package com.example.jwtwithoauth2.auth.jwt.util;
 import com.example.jwtwithoauth2.account.Account;
 import com.example.jwtwithoauth2.auth.jwt.JwtProperties;
 import com.example.jwtwithoauth2.auth.jwt.dto.TokenOfLogin;
+import com.example.jwtwithoauth2.auth.jwt.token.RefreshToken;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -22,10 +24,10 @@ import java.util.Map;
  * </p>
  * <p>{@link #getAccessToken(Account)}} 엑세스 토큰 획득</p>
  * <p>{@link #createAccessToken(Account)} 액세스 토큰 생성</p>
- * <p>{@link #createRefreshToken(Account)} 리프레쉬 토큰 생성</p>
- * <p>{@link #createRefreshToken(Account)} ()} 리프레쉬 토큰 생성</p>
- *
+ * <p>{@link #createRefreshToken()} 리프레쉬 토큰 생성</p>
+ * <p>{@link #createRefreshToken()} 리프레쉬 토큰 생성</p>
  */
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class JwtTokenFactory {
@@ -61,7 +63,7 @@ public class JwtTokenFactory {
         String accessToken = createAccessToken(account);
 
         // 리프레시 토큰 생성
-        String refreshToken = createRefreshToken(account);
+        String refreshToken = createRefreshToken();
 
         return TokenOfLogin.builder()
                 .accessToken(accessToken)
@@ -98,26 +100,37 @@ public class JwtTokenFactory {
 
     }
 
-    private String createRefreshToken(Account account) {
+    public String createRefreshToken() {
         // jwt header setting
         Map<String, Object> header = createHeader();
 
         // jwt expiration time setting
         Instant now = Instant.now();
+        log.info("refresh key = {}", properties.getRefreshTokenSigningKey());
+        return Jwts.builder()
+                .setExpiration(Date.from(now.plus(properties.getRefreshTokenExpirationTime(), ChronoUnit.MINUTES)))
+                .signWith(Keys.hmacShaKeyFor(properties.getRefreshTokenSigningKey().getBytes()))
+                .compact();
+    }
 
+
+    public String createAccessToken(RefreshToken refreshToken){
+        // jwt expiration time setting
+        Instant now = Instant.now();
 
         // jwt access token claims setting
         Map<String, Object> payload = Map.of(
-                "email", account.getEmail(),
-                "user", account.getId(),
-                "role", account.getRole()
+                "email", refreshToken.getAccountEmail(),
+                "user", refreshToken.getAccountId(),
+                "role", refreshToken.getRole()
         );
 
         return Jwts.builder()
-                .setSubject(String.valueOf(account.getId()))
+                .setSubject(String.valueOf(refreshToken.getId()))
                 .setIssuer(properties.getIssuer())
                 .setExpiration(Date.from(now.plus(properties.getAccessTokenExpirationTime(), ChronoUnit.MINUTES)))
-                .signWith(Keys.hmacShaKeyFor(properties.getRefreshTokenSigningKey().getBytes()))
+                .addClaims(payload)
+                .signWith(Keys.hmacShaKeyFor(properties.getAccessTokenSigningKey().getBytes()))
                 .compact();
     }
 }

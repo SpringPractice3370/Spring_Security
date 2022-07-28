@@ -44,6 +44,9 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         log.info("jwt auth 필터 작동");
+        if(request.getRequestURI().equals("/api/refresh")){
+            return null;
+        }
         String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
 
         // 인증 헤더가 없는 경우 예외 발생
@@ -52,6 +55,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         }
         // Bearer 접두어 제거
         String token = authorizationHeader.substring(BEARER_PREFIX.length());
+        log.info("Bearer 접두어 제거 {}", token);
 
         JwtPreAuthenticationToken preAuthenticationToken = new JwtPreAuthenticationToken(token);
         return this.getAuthenticationManager().authenticate(preAuthenticationToken);

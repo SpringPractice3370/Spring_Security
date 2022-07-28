@@ -7,6 +7,7 @@ import com.example.jwtwithoauth2.auth.jwt.exception.JwtExpiredTokenException;
 import com.example.jwtwithoauth2.auth.jwt.exception.JwtModulatedTokenException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,7 @@ import java.util.Objects;
  * </p>
  */
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFailureHandler implements AuthenticationFailureHandler {
@@ -45,12 +47,15 @@ public class JwtAuthenticationFailureHandler implements AuthenticationFailureHan
         if (exception instanceof AuthorizationHeaderNotFoundException) {
             // 인증 토큰 누락
             responseValue = Response.of(JwtErrorCode.TOKEN_NOTFOUND, null);
+            log.info("인증 토큰 누락");
         } else if (exception instanceof JwtExpiredTokenException) {
             // 액세스 토큰 만료
             responseValue = Response.of(JwtErrorCode.ACCESS_TOKEN_EXPIRATION, null);
+            log.info("액세스 토큰 만료");
         } else if (exception instanceof JwtModulatedTokenException) {
             // 토큰 변조
             responseValue = Response.of(JwtErrorCode.TOKEN_MODULATED, null);
+            log.info("토큰 변조");
         }
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setHeader(HttpHeaders.CONTENT_ENCODING, "UTF-8");
@@ -58,6 +63,7 @@ public class JwtAuthenticationFailureHandler implements AuthenticationFailureHan
         if (Objects.nonNull(responseValue)) {
             PrintWriter writer = response.getWriter();
             writer.write(objectMapper.writeValueAsString(responseValue));
+            log.info("writer {}", writer);
         }
     }
 }

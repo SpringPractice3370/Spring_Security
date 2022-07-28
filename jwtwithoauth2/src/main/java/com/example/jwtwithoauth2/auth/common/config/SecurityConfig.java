@@ -2,8 +2,11 @@ package com.example.jwtwithoauth2.auth.common.config;
 
 
 import com.example.jwtwithoauth2.auth.jwt.filter.JwtAuthenticationFilter;
+import com.example.jwtwithoauth2.auth.jwt.filter.JwtRefreshFilter;
 import com.example.jwtwithoauth2.auth.jwt.handler.JwtAuthenticationFailureHandler;
 import com.example.jwtwithoauth2.auth.jwt.provider.JwtAuthenticationProvider;
+import com.example.jwtwithoauth2.auth.jwt.service.RefreshTokenService;
+import com.example.jwtwithoauth2.auth.jwt.util.JwtTokenFactory;
 import com.example.jwtwithoauth2.auth.oauth2.handler.OAuth2LoginAuthenticationSuccessHandler;
 import com.example.jwtwithoauth2.auth.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
@@ -29,7 +33,7 @@ import javax.servlet.Filter;
  */
 
 @Configuration
-@RequiredArgsConstructor
+@EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // OAuth2 Beans
@@ -39,9 +43,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private OAuth2LoginAuthenticationSuccessHandler oAuth2LoginAuthenticationSuccessHandler;
 
-    // jwt Beans
+    /**
+     *  jwt Beans
+     */
+
+    //Jwt Util
     @Autowired
     private JwtAuthenticationProvider jwtAuthenticationProvider;
+
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
+    @Autowired
+    private JwtTokenFactory jwtTokenFactory;
+
+    // Jwt Refresh Filter
+    public Filter jwtRefreshFilter() throws Exception{
+        JwtRefreshFilter jwtRefreshFilter = new JwtRefreshFilter(refreshTokenService, jwtTokenFactory);
+
+        return jwtRefreshFilter;
+    }
 
     @Autowired
     private JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
@@ -79,6 +100,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // URL security
         http.authorizeRequests()
-                .antMatchers("/api/a").access("hasRole('ROLE_ADMIN')");
+                .antMatchers("/api/a").access("hasRole('ROLE_ADMIN')")
+                .antMatchers("/**").permitAll();
     }
 }

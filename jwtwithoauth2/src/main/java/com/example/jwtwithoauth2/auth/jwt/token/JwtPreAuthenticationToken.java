@@ -17,6 +17,7 @@ public class JwtPreAuthenticationToken extends AbstractAuthenticationToken {
         super(null); // 인증 전 객체이므로 권한 정보가 없음
         this.setAuthenticated(false);
         this.token = token;
+
     }
 
     // OAuth2 인증 이므로 별도의 패스워드 없음 사용X
