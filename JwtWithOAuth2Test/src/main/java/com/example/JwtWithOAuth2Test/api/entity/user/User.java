@@ -100,6 +100,12 @@ public class User {
         this.modifiedAt = modifiedAt;
     }
 
-    public User(String subject, String s, Collection<? extends GrantedAuthority> authorities) {
+
+    public void updateUsername(String username) {
+        this.username = username;
+    }
+
+    public void updateProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 }
