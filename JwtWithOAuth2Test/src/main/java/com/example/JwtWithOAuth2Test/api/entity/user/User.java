@@ -7,17 +7,19 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "user")
 @AllArgsConstructor
+@Table(name = "user")
 public class User {
 
     @JsonIgnore
@@ -75,5 +77,29 @@ public class User {
     @NotNull
     private LocalDateTime modifiedAt;
 
+    public User(
+            @NotNull @Size(max = 64) String userId,
+            @NotNull @Size(max = 100) String username,
+            @NotNull @Size(max = 512) String email,
+            @NotNull @Size(max = 1) String emailVerifiedYn,
+            @NotNull @Size(max = 512) String profileImageUrl,
+            @NotNull ProviderType providerType,
+            @NotNull RoleType roleType,
+            @NotNull LocalDateTime createdAt,
+            @NotNull LocalDateTime modifiedAt
+    ) {
+        this.userId = userId;
+        this.username = username;
+        this.password = "NO_PASS";
+        this.email = email != null ? email : "NO_EMAIL";
+        this.emailVerifiedYn = emailVerifiedYn;
+        this.profileImageUrl = profileImageUrl != null ? profileImageUrl : "";
+        this.providerType = providerType;
+        this.roleType = roleType;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+    }
 
+    public User(String subject, String s, Collection<? extends GrantedAuthority> authorities) {
+    }
 }
