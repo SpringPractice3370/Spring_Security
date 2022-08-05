@@ -62,6 +62,8 @@ public class OAuth2LoginAuthenticationSuccessHandler implements AuthenticationSu
                 .queryParam("is-first", first)
                 .toUriString();
 
+        response.addHeader("access-token", tokenOfLogin.getAccessToken());
+        response.addHeader("refresh-token", tokenOfLogin.getRefreshToken());
         response.sendRedirect(redirectUri);
 
     }

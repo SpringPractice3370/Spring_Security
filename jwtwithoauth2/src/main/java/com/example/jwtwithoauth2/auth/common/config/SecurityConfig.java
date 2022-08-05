@@ -57,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtTokenFactory jwtTokenFactory;
 
-    // Jwt Refresh Filter
+    // jwt 갱신 필터
     public Filter jwtRefreshFilter() throws Exception{
         JwtRefreshFilter jwtRefreshFilter = new JwtRefreshFilter(refreshTokenService, jwtTokenFactory);
 
@@ -66,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtAuthenticationFailureHandler jwtAuthenticationFailureHandler;
-
+    // jwt 인증 필터
     public Filter jwtAuthenticationFilter() throws Exception {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter("/api/**");
         filter.setAuthenticationManager(super.authenticationManager());
