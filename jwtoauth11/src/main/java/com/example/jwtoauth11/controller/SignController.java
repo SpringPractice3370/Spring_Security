@@ -5,6 +5,8 @@ import com.example.jwtoauth11.dto.MemberLoginResponseDto;
 import com.example.jwtoauth11.dto.MemberRegisterRequestDto;
 import com.example.jwtoauth11.dto.MemberRegisterResponseDto;
 import com.example.jwtoauth11.dto.result.SingleResult;
+import com.example.jwtoauth11.dto.token.TokenRequestDto;
+import com.example.jwtoauth11.dto.token.TokenResponseDto;
 import com.example.jwtoauth11.service.ResponseService;
 import com.example.jwtoauth11.service.SignService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,12 @@ public class SignController {
     @PostMapping("/login")
     public SingleResult<MemberLoginResponseDto> login(@RequestBody MemberLoginRequestDto requestDto) {
         MemberLoginResponseDto responseDto = signService.loginMember(requestDto);
+        return responseService.getSingleResult(responseDto);
+    }
+
+    @PostMapping("/reissue")
+    public SingleResult<TokenResponseDto> reIssue(@RequestBody TokenRequestDto tokenRequestDto) {
+        TokenResponseDto responseDto = signService.reIssue(tokenRequestDto);
         return responseService.getSingleResult(responseDto);
     }
 }

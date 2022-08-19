@@ -22,19 +22,26 @@ public class Member {
 
     private String email;
     private String password;
+    private String provider;
+    private String refreshToken;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     private List<Role> roles = new ArrayList<>();
 
     @Builder
-    public Member(String email, String password, List<Role> roles) {
+    public Member(String email, String password, String provider, List<Role> roles) {
         this.email = email;
         this.password = password;
+        this.provider = provider;
         this.roles = Collections.singletonList(Role.ROLE_MEMBER);
     }
 
     public void addRole(Role role) {
         this.roles.add(role);
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

@@ -4,6 +4,7 @@ import com.example.jwtoauth11.config.security.CustomUserDetailsService;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,12 +19,15 @@ import java.util.Date;
 @Setter
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtTokenProvider {
 
     @Value("${spring.jwt.secretKey}")
     private String secretKey;
 
-    private long tokenValidTime = 1L; // 30분
+    private long tokenValidTime = 1000L * 60 * 30; // 30분
+    private long refreshTokenValidTime = 1000L * 60 * 60 * 24 * 7; // 7일
+
 
     private final CustomUserDetailsService customUserDetailsService;
 
@@ -32,6 +36,9 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
+    /**
+     * AccessToken 생성
+     */
     public String createToken(String email) {
         Claims claims = Jwts.claims().setSubject(email);
         Date now = new Date();
@@ -43,6 +50,20 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
+    /**
+     * refreshToken 생성
+     * 오직 재발행의 목적으로만 사용하기에 sub 불필요
+     */
+    public String createRefreshToken() {
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
 
     /**
      * 토큰으로 인증 객체(Authentication)을 얻기 위한 메소드이다.
@@ -74,11 +95,10 @@ public class JwtTokenProvider {
      * @param token
      * @return
      */
-
-    public boolean validateTokenExpiration(String token) {
+    public boolean validateTokenExceptExpiration(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            return true;
+            return !claims.getBody().getExpiration().before(new Date());
         } catch(Exception e) {
             return false;
         }

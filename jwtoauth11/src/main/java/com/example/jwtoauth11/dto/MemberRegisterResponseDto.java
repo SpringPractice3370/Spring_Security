@@ -9,11 +9,13 @@ import lombok.NoArgsConstructor;
 public class MemberRegisterResponseDto {
     private Long id;
     private String email;
+    private String authToken;
 
     @Builder
-    public MemberRegisterResponseDto(Long id, String email) {
+    public MemberRegisterResponseDto(Long id, String email, String authToken) {
         this.id = id;
         this.email = email;
+        this.authToken = authToken;
     }
 
 }
