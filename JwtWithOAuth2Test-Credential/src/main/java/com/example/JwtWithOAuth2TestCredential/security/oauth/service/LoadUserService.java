@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class LoadUserService {
@@ -26,11 +28,14 @@ public class LoadUserService {
 
         setSocialLoadStrategy(socialType);//SocialLoadStrategy 설정
 
-        String socialPk = socialLoadStrategy.getSocialPk(authentication.getAccessToken());//PK 가져오기
+        Map<String, Object> socialPk = socialLoadStrategy.getSocialPk(authentication.getAccessToken());//PK 가져오기
+        String email = socialPk.get("email").toString();
+        String socialId = socialPk.get("id").toString();
 
         return OAuth2UserDetails.builder() //PK와 SocialType을 통해 회원 생성
-                .socialId(socialPk)
+                .socialId(socialId)
                 .socialType(socialType)
+                .email(email)
                 .build();
     }
 

@@ -12,14 +12,16 @@ public class KakaoLoadStrategy extends SocialLoadStrategy{
 
 
 
-    protected String sendRequestToSocialSite(HttpEntity request){
+    protected Map<String, Object> sendRequestToSocialSite(HttpEntity request){
         try {
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(SocialType.KAKAO.getUserInfoUrl(),// -> /v2/user/me
                     SocialType.KAKAO.getMethod(),
                     request,
                     RESPONSE_TYPE);
 
-            return response.getBody().get("id").toString();//카카오는 id를 PK로 사용
+            Map<String, Object> response2 = (Map<String, Object>) response.getBody().get("id");
+
+            return response2;
 
         } catch (Exception e) {
             log.error("AccessToken을 사용하여 KAKAO 유저정보를 받아오던 중 예외가 발생했습니다 {}" ,e.getMessage() );

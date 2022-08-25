@@ -11,7 +11,7 @@ import java.util.Map;
 public class NaverLoadStrategy extends SocialLoadStrategy{
 
 
-    protected String sendRequestToSocialSite(HttpEntity request){
+    protected Map<String, Object> sendRequestToSocialSite(HttpEntity request){
         try {
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(SocialType.NAVER.getUserInfoUrl(),//
                     SocialType.NAVER.getMethod(),
@@ -19,8 +19,13 @@ public class NaverLoadStrategy extends SocialLoadStrategy{
                     RESPONSE_TYPE);
 
 
-            Map<String , Object> response2 = ( Map<String , Object>)response.getBody().get("response");
-            return response2.get("id").toString();
+            Map<String, Object> response2 = (Map<String, Object>) response.getBody().get("response");
+
+            System.out.println("response2name = " +   response2.get("name").toString());
+            System.out.println("response2id = " +   response2.get("id").toString());
+            System.out.println("response2email = " +   response2.get("email").toString());
+
+            return response2;
 
 
         } catch (Exception e) {

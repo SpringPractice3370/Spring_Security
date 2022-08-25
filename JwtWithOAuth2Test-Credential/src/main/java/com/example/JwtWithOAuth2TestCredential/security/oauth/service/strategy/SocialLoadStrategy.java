@@ -12,27 +12,22 @@ import java.util.Collections;
 import java.util.Map;
 
 public abstract class SocialLoadStrategy {
-
     ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE  =  new ParameterizedTypeReference<>(){};
 
     protected final RestTemplate restTemplate = new RestTemplate();
 
-    public String getSocialPk(String accessToken) {
+    public Map<String, Object>  getSocialPk(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
-
         setHeaders(accessToken, headers);
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
         return sendRequestToSocialSite(request);//구체 클래스가 구현
     }
 
-    protected abstract String sendRequestToSocialSite(HttpEntity request);
-
-
+    protected abstract Map<String, Object> sendRequestToSocialSite(HttpEntity request);
 
     public void setHeaders(String accessToken, HttpHeaders headers) {
         headers.set("Authorization", "Bearer " + accessToken);
