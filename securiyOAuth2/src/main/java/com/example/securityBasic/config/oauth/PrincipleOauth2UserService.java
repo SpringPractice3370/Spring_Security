@@ -1,10 +1,7 @@
 package com.example.securityBasic.config.oauth;
 
 import com.example.securityBasic.config.auth.PrincipleDetails;
-import com.example.securityBasic.config.oauth.provider.FacebookUserInfo;
-import com.example.securityBasic.config.oauth.provider.GoogleUserInfo;
-import com.example.securityBasic.config.oauth.provider.NaverUserInfo;
-import com.example.securityBasic.config.oauth.provider.OAuth2UserInfo;
+import com.example.securityBasic.config.oauth.provider.*;
 import com.example.securityBasic.model.User;
 import com.example.securityBasic.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +48,11 @@ public class PrincipleOauth2UserService extends DefaultOAuth2UserService {
         } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
             System.out.println("네이버 로그인 요청");
             oAuth2UserInfo = new NaverUserInfo((Map) oAuth2User.getAttributes().get("response"));
-        }else {
+        }else if(userRequest.getClientRegistration().getRegistrationId().equals("kakao")){
+            System.out.println("카카오 로그인 요청");
+            oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
+        }
+        else{
             System.out.println("구글과 페이스북, 네이버만 지원함");
         }
 
