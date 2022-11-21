@@ -31,7 +31,7 @@ class JwtProvider(
         val accessTokenExpiresIn = Date(now + TokenInfo.ACCESS_TOKEN_EXPIRE_TIME)
 
         val accessToken = Jwts.builder()
-            .setSubject(authentication.getName())
+            .setSubject(authentication.name)
             .claim(TokenInfo.AUTHORITIES_KEY, authorities)
             .setExpiration(accessTokenExpiresIn)
             .signWith(key, SignatureAlgorithm.HS512)

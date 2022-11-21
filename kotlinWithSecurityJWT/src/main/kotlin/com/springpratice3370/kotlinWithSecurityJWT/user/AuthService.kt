@@ -2,6 +2,7 @@ package com.springpratice3370.kotlinWithSecurityJWT.user
 
 import com.springpratice3370.kotlinWithSecurityJWT.jwt.JwtProvider
 import com.springpratice3370.kotlinWithSecurityJWT.jwt.TokenDto
+import com.springpratice3370.kotlinWithSecurityJWT.security.SecurityUtils.currentAccountEmail
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.core.Authentication
@@ -39,6 +40,10 @@ class AuthService(
                 role = Role.ROLE_USER
             )
         )
+    }
+
+    fun findMe(): User {
+        return userRepository.findByEmail(currentAccountEmail)?: throw RuntimeException()
     }
 
 }

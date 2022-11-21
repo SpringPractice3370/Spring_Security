@@ -29,4 +29,9 @@ class TestController(
         return authServie.singUp(loginRequest)
     }
 
+    @GetMapping("/me")
+    fun getMe():User {
+        return authServie.findMe()
+    }
+
 }
